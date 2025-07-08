@@ -1,18 +1,16 @@
 // app.js
-// Inicializace localStorage
 const storage = {
   get: (key, def) => JSON.parse(localStorage.getItem(key)) || def,
   set: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
 };
 
-// Data
 let pricePer100g = storage.get('pricePer100g', 100);
 let calculations = storage.get('calculations', []);
 let shifts = storage.get('shifts', []);
 let currentShift = storage.get('currentShift', null);
 let theme = storage.get('theme', 'dark');
 
-// Elementy
+// Elements
 const weightInput = document.getElementById('weight');
 const basePriceEl = document.getElementById('base-price');
 const finalPriceEl = document.getElementById('final-price');
@@ -82,58 +80,70 @@ function updateHistory() {
   calcHistory.innerHTML = calculations.map(c => `
     <div class="history-card">
       <p>${new Date(c.date).toLocaleString('cs')}</p>
-      <p>Váha: ${c.weight}g, Přirážka: ${c.markup}%</p>
-      <p>Základ: ${c.basePrice.toFixed(2)} Kč, Finální: ${c.finalPrice.toFixed(2)} Kč, Výdělek: ${c.profit.toFixed(2)} Kč</p>
+      <p>Váha: <b>${c.weight}g</b>, Přirážka: <b>${c.markup}%</b></p>
+      <p>Základ: <b>${c.basePrice.toFixed(2)} Kč</b>, Finální: <b>${c.finalPrice.toFixed(2)} Kč</b>, Výdělek: <b>${c.profit.toFixed(2)} Kč</b></p>
     </div>
   `).join('');
   shiftHistory.innerHTML = shifts.map(s => `
     <div class="history-card">
       <p>${new Date(s.date).toLocaleString('cs')}</p>
-      <p>Výdělek: ${s.profit.toFixed(2)} Kč, Prodejů: ${s.sales}</p>
+      <p>Výdělek: <b>${s.profit.toFixed(2)} Kč</b>, Prodejů: <b>${s.sales}</b></p>
     </div>
   `).join('');
 
-  // Graf zisků
-  new Chart(document.getElementById('profit-chart'), {
-    type: 'line',
-    data: {
-      labels: calculations.slice(0, 10).reverse().map(c => new Date(c.date).toLocaleDateString('cs')),
-      datasets: [{
-        label: 'Zisk z výpočtů',
-        data: calculations.slice(0, 10).reverse().map(c => c.profit),
-        borderColor: '#4facfe',
-        backgroundColor: 'rgba(79, 172, 254, 0.2)',
-        fill: true,
-      }],
-    },
-    options: { scales: { y: { beginAtZero: true } } },
-  });
-
-  new Chart(document.getElementById('shift-chart'), {
-    type: 'bar',
-    data: {
-      labels: shifts.slice(0, 10).reverse().map(s => new Date(s.date).toLocaleDateString('cs')),
-      datasets: [{
-        label: 'Zisk ze směn',
-        data: shifts.slice(0, 10).reverse().map(s => s.profit),
-        backgroundColor: '#ff6b6b',
-      }],
-    },
-    options: { scales: { y: { beginAtZero: true } } },
-  });
+  // Grafy pouze pokud sekce aktivní!
+  const historySection = document.getElementById('history');
+  if (historySection && historySection.classList.contains('active')) {
+    const profitChart = document.getElementById('profit-chart');
+    if (profitChart) {
+      profitChart.width = profitChart.clientWidth; // Fix for Chart.js resize bug
+      new Chart(profitChart, {
+        type: 'line',
+        data: {
+          labels: calculations.slice(0, 10).reverse().map(c => new Date(c.date).toLocaleDateString('cs')),
+          datasets: [{
+            label: 'Zisk z výpočtů',
+            data: calculations.slice(0, 10).reverse().map(c => c.profit),
+            borderColor: '#4facfe',
+            backgroundColor: 'rgba(79, 172, 254, 0.2)',
+            fill: true,
+            tension: 0.38,
+            pointRadius: 3
+          }],
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } },
+      });
+    }
+    const shiftChart = document.getElementById('shift-chart');
+    if (shiftChart) {
+      shiftChart.width = shiftChart.clientWidth;
+      new Chart(shiftChart, {
+        type: 'bar',
+        data: {
+          labels: shifts.slice(0, 10).reverse().map(s => new Date(s.date).toLocaleDateString('cs')),
+          datasets: [{
+            label: 'Zisk ze směn',
+            data: shifts.slice(0, 10).reverse().map(s => s.profit),
+            backgroundColor: '#ff6b6b',
+          }],
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { display: false } } },
+      });
+    }
+  }
 }
 
-// Přepínání stránek
+// Navigace
 navButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     navButtons.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     pages.forEach(p => p.classList.remove('active'));
     document.getElementById(btn.dataset.page).classList.add('active');
+    if (btn.dataset.page === "history") updateHistory();
   });
 });
 
-// Přirážky
 markupButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     markupButtons.forEach(b => b.classList.remove('active'));
@@ -141,11 +151,8 @@ markupButtons.forEach(btn => {
     updateCalculator();
   });
 });
-
-// Input váhy
 weightInput.addEventListener('input', updateCalculator);
 
-// Směna
 shiftBtn.addEventListener('click', () => {
   if (currentShift) {
     shifts.unshift({ date: new Date(), profit: currentShift.profit, sales: currentShift.sales });
@@ -159,20 +166,16 @@ shiftBtn.addEventListener('click', () => {
   updateShiftInfo();
   updateHistory();
 });
-
-// Nastavení
 priceInput.addEventListener('change', () => {
   pricePer100g = parseFloat(priceInput.value) || 100;
   storage.set('pricePer100g', pricePer100g);
   updateCalculator();
 });
-
 themeToggle.addEventListener('change', () => {
   theme = themeToggle.checked ? 'dark' : 'light';
   document.body.classList.toggle('light', theme === 'light');
   storage.set('theme', theme);
 });
-
 resetBtn.addEventListener('click', () => {
   localStorage.clear();
   calculations = [];
@@ -184,13 +187,11 @@ resetBtn.addEventListener('click', () => {
   storage.set('theme', theme);
   window.location.reload();
 });
-
 clearCalcBtn.addEventListener('click', () => {
   calculations = [];
   storage.set('calculations', calculations);
   updateHistory();
 });
-
 clearShiftBtn.addEventListener('click', () => {
   shifts = [];
   storage.set('shifts', shifts);
