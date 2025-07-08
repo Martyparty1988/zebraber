@@ -1,12 +1,11 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Udělám tě na žebrech</title>
-  <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="icon.png">
   <meta name="theme-color" content="#1a1a1a">
 </head>
@@ -14,45 +13,49 @@
   <div class="container">
     <!-- Kalkulačka -->
     <section id="calculator" class="page active">
-      <h1><img src="scale.svg" alt="Váha"> Udělám tě na žebrech</h1>
-      <div class="input-card">
-        <input type="number" id="weight" placeholder="Váha (g)" min="0">
-      </div>
-      <div class="markup-buttons">
-        <button class="markup-btn" data-markup="5">5%</button>
-        <button class="markup-btn" data-markup="10">10%</button>
-        <button class="markup-btn" data-markup="20">20%</button>
-        <button class="markup-btn" data-markup="30">30%</button>
-        <button class="markup-btn" data-markup="50">50%</button>
-      </div>
-      <div class="result-card">
-        <p>Základní cena: <span id="base-price">0 Kč</span></p>
-        <p>Finální cena: <span id="final-price">0 Kč</span></p>
-        <p>Výdělek: <span id="profit">0 Kč</span></p>
-      </div>
-      <div class="shift-section">
-        <button id="shift-btn" class="shift-btn">Začít směnu</button>
-        <div id="shift-info" class="shift-info hidden">
-          <p>Výdělek: <span id="shift-profit">0 Kč</span></p>
-          <p>Prodejů: <span id="shift-sales">0</span></p>
+      <div class="card calc-card">
+        <div class="card-header">
+          <img src="scale.svg" alt="Váha" class="logo">
+          <h1>Udělám tě na žebrech</h1>
+        </div>
+        <div class="card-content">
+          <input type="number" id="weight" placeholder="Váha (g)" min="0" class="input-large">
+          <div class="markup-buttons">
+            <button class="markup-btn" data-markup="5">+5%</button>
+            <button class="markup-btn" data-markup="10">+10%</button>
+            <button class="markup-btn" data-markup="20">+20%</button>
+            <button class="markup-btn" data-markup="30">+30%</button>
+            <button class="markup-btn" data-markup="50">+50%</button>
+          </div>
+          <div class="result-card">
+            <div><span>Základní cena</span><span id="base-price">0 Kč</span></div>
+            <div><span>Finální cena</span><span id="final-price">0 Kč</span></div>
+            <div><span>Výdělek</span><span id="profit">0 Kč</span></div>
+          </div>
+        </div>
+        <div class="shift-section">
+          <button id="shift-btn" class="shift-btn">Začít směnu</button>
+          <div id="shift-info" class="shift-info hidden">
+            <p>Výdělek: <b id="shift-profit">0 Kč</b></p>
+            <p>Prodejů: <b id="shift-sales">0</b></p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Historie -->
     <section id="history" class="page">
-      <h1>Historie</h1>
-      <div class="history-section">
+      <div class="card history-card">
         <h2>Výpočty</h2>
         <div id="calc-history"></div>
         <button id="clear-calc-history" class="clear-btn">Smazat výpočty</button>
       </div>
-      <div class="history-section">
+      <div class="card history-card">
         <h2>Směny</h2>
         <div id="shift-history"></div>
         <button id="clear-shift-history" class="clear-btn">Smazat směny</button>
       </div>
-      <div class="chart-section">
+      <div class="card chart-card">
         <h2>Graf zisků</h2>
         <canvas id="profit-chart"></canvas>
         <canvas id="shift-chart"></canvas>
@@ -61,23 +64,34 @@
 
     <!-- Nastavení -->
     <section id="settings" class="page">
-      <h1>Nastavení</h1>
-      <div class="settings-card">
-        <label for="price-per-100g">Cena za 100g (Kč)</label>
-        <input type="number" id="price-per-100g" min="0" value="100">
+      <div class="card settings-card">
+        <h2>Nastavení</h2>
+        <div class="setting-row">
+          <label for="price-per-100g">Cena za 100g (Kč)</label>
+          <input type="number" id="price-per-100g" min="0" value="100" class="input-setting">
+        </div>
+        <div class="setting-row">
+          <label for="theme-toggle">Tmavý režim</label>
+          <input type="checkbox" id="theme-toggle">
+        </div>
+        <button id="reset-app" class="clear-btn">Resetovat aplikaci</button>
       </div>
-      <div class="settings-card">
-        <label for="theme-toggle">Tmavý režim</label>
-        <input type="checkbox" id="theme-toggle">
-      </div>
-      <button id="reset-app" class="clear-btn">Resetovat aplikaci</button>
     </section>
 
     <!-- Navigace -->
     <nav class="bottom-nav">
-      <button data-page="calculator" class="nav-btn active">Kalkulačka</button>
-      <button data-page="history" class="nav-btn">Historie</button>
-      <button data-page="settings" class="nav-btn">Nastavení</button>
+      <button data-page="calculator" class="nav-btn active">
+        <span class="nav-icon">🧮</span>
+        <span>Kalkulačka</span>
+      </button>
+      <button data-page="history" class="nav-btn">
+        <span class="nav-icon">📊</span>
+        <span>Historie</span>
+      </button>
+      <button data-page="settings" class="nav-btn">
+        <span class="nav-icon">⚙️</span>
+        <span>Nastavení</span>
+      </button>
     </nav>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
