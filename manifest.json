@@ -1,11 +1,11 @@
-// manifest.json
 {
   "name": "Udělám tě na žebrech",
   "short_name": "Na žebrech",
-  "start_url": "/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#1a1a1a",
+  "description": "Moderní kalkulačka žebírkových výdělků.",
   "icons": [
     {
       "src": "icon.png",
@@ -16,6 +16,12 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }
